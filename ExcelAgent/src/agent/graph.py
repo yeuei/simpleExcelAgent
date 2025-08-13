@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 import operator
 from typing import Dict, List, Optional, Tuple, Union
-from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, RemoveMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage, HumanMessage, SystemMessage, RemoveMessage
 from langchain_core.tools import tool
 import langgraph
 from langgraph.graph import StateGraph, START, END, MessagesState
@@ -12,7 +12,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command, Send
-from typing_extensions import TypedDict, Annotated
+from typing_extensions import Sequence, TypedDict, Annotated
 from langgraph.prebuilt import ToolNode, tools_condition
 from StructureOutput.structure_output_agent import StructureAgent, Image_Text_depature
 from langchain_core.messages import HumanMessage
@@ -22,8 +22,23 @@ import os
 import re
 import json
 from langchain_experimental.utilities import PythonREPL
-from utils.common_tools import clear_image_history, get_only_32, get_parameters, merge_dict, make_tool_call, get_final_toolmessages
+from utils.common_tools import clear_image_history, make_tool_call, get_final_toolmessages, add_human_in_the_loop
 import aiofiles
+from functools import partial
+
+@dataclass
+class Tools_record():
+    tools_record = {}
+TR1 = Tools_record()
+TR2 = Tools_record()
+
+TR1.tools_record = {}
+TR2.tools_record = {}
+
+TR1_LOOP = partial(add_human_in_the_loop, TR = TR1)
+TR2_LOOP = partial(add_human_in_the_loop, TR = TR2)
+
+
 
 repl = PythonREPL()
 @tool
@@ -59,20 +74,6 @@ gvar = Global_var()
 gvar.check_new_photo = True
 gvar.max_interaction = 2
 
-# 测试图片
-# photo_root = 'test_photos'
-# photo_urls = []
-# for photo in sorted(os.listdir(photo_root)):
-#     print(photo)
-#     photo_urls.append(os.path.join(photo_root, photo))
-
-# input('顺序')
-# if len(photo_urls) > 0:
-#     gvar.check_new_photo = True
-#     config["configurable"]["check_new_photo"] = True
-# else:
-#     gvar.check_new_photo = False
-#     config["configurable"]["check_new_photo"] = False
 
 
 
@@ -110,13 +111,18 @@ async def get_prompt():
 prompt = asyncio.run(get_prompt())
 
 
+all_tools1 = [TR1_LOOP(tool) for tool in all_tools]
+all_tools2 = [TR2_LOOP(tool) for tool in all_tools]
 # 绑定模型
-llm_with_tools = qwen_vl_llm.bind_tools(all_tools)
+# llm_with_tools = qwen_vl_llm.bind_tools(all_tools)
+llm_with_tools1 = qwen_vl_llm.bind_tools(all_tools1)
+llm_with_tools2 = qwen_vl_llm.bind_tools(all_tools2)
 
-image_partial_agent = StructureAgent(llm_with_tools, prompt, Image_Text_depature)
+
+image_partial_agent = StructureAgent(qwen_vl_llm, prompt, Image_Text_depature)
 # 定义状态
 class MyState(TypedDict):
-    messages: Annotated[list, add_messages] = []
+    messages: Annotated[Sequence[BaseMessage], add_messages] = []
     photos: List[str] = []
     image_question: str
     text_question: str
@@ -151,8 +157,9 @@ def subgraphs_condition(state):
         return '__end__'
     return tools_condition(state, messages_key="new_messages")
 
-sub_tool_node1 = ToolNode(tools = all_tools, messages_key = 'new_messages')
-sub_tool_node2 =ToolNode(tools = all_tools, messages_key = 'new_messages')
+sub_tool_node1 = ToolNode(tools = all_tools1, messages_key = 'new_messages')
+sub_tool_node2 =ToolNode(tools = all_tools2, messages_key = 'new_messages')
+
 async def only_text_chat(_state:SubState):
     count = 0
     # 强制使用tool_calls
@@ -161,7 +168,7 @@ async def only_text_chat(_state:SubState):
     sys_prompt = [SystemMessage(content = f'{arguments_shedule}')]# 如果需要使用Sheet1但是没有Sheet1,请创建Sheet1;如果Sheet1已经存在,禁止删除该Sheet1,可以直接在上面操作**')]
     
     if _state.get('messages', False):
-        unput('不可能123！')
+        input('不可能123！')
         ques = _state['messages'].copy()
         count += 1
     if _state.get('new_messages', False):
@@ -175,7 +182,7 @@ async def only_text_chat(_state:SubState):
     )
 
     if _state.get('sub_question', False):
-        ques += [guodu_message] + [HumanMessage(content = '请结合历史信息完成你的任务，现在你的任务是' + _state['sub_question'])]
+        ques += [guodu_message] + [HumanMessage(content = '请结合历史信息完成你的任务，现在你的任务是' + _state['sub_question'] + '请一步一步实现这个任务，每一步都要展现出来！')]
     # 强制使用tool_calls
     if len(ques) != 0 and ques[-1].__class__.__name__ == 'ToolMessage':
         ind = get_final_toolmessages(ques)
@@ -183,12 +190,8 @@ async def only_text_chat(_state:SubState):
         ques = ques[:ind] + sys_prompt + ques[ind:]
     else:
         ques += sys_prompt
-
-    # input('text当前的ques')
-    # print(ques)
-    # input('text当前的ques')
-
-    ans = await llm_with_tools.ainvoke(ques)
+    ans = await llm_with_tools1.ainvoke(ques)
+    TR1.tools_record.clear()
     new_ans =  make_tool_call(ans)
     return {"new_messages": [new_ans], 'sub_question': ''}
 
@@ -228,19 +231,24 @@ async def multi_process(_state:SubState):
     # print(ques)
     # input('请查看抽取图片后的内容')
 
+    if _state.get('sub_question', False): # 为True
+        ques += [guodu_message]+ [multimodal_message] + [text_message] + sys_prompt
+
+    # 理论上_state.get('sub_question', False)为False的时候，就是已经在子图循环过至少一次了，
+    # 那么就可以只管工具调用了  
     if len(ques) != 0 and ques[-1].__class__.__name__ == 'ToolMessage':
         ind = get_final_toolmessages(ques)
-        # input('出现了！！！！')
-        ques = ques[:ind] + [guodu_message]+ [multimodal_message] + [text_message] + sys_prompt + ques[ind:]
+        # ques = ques[:ind] + [guodu_message]+ [multimodal_message] + [text_message] + sys_prompt + ques[ind:]
+        ques = ques[:ind] + [guodu_message]+ [multimodal_message] + sys_prompt + ques[ind:]
     else:
-        ques += [guodu_message]+ [multimodal_message] + [text_message] + sys_prompt
-    # 强制使用tool_calls
+        ques += [guodu_message] + [multimodal_message] + sys_prompt
 
     # input('当前的ques')
     # print(ques)
     # input('当前的ques')
-    ans = await llm_with_tools.ainvoke(ques)
+    ans = await llm_with_tools2.ainvoke(ques)
     new_ans =  make_tool_call(ans)
+    TR2.tools_record.clear()
     return {"new_messages": [new_ans], 'sub_question': ''}
 
 # 纯文本子图
@@ -272,26 +280,23 @@ subgraph_text = subgraph_text.compile() # checkpointer=True
 '''
 主图
 '''
-photo_urls = []
 ###########################################################
 def upload_photo(_state:MyState, config: RunnableConfig):
-    t_message = _state['messages'][-1]
-    if t_message.__class__.__name__ == 'HumanMessage':
-        if isinstance(t_message.content, list):
-            if len(t_message.content) > 0:
-                for data in t_message.content:
-                    if data['type'] == 'image':
-                        photo_urls.append(data['data'])
-                # input(f'查看收获的{photo_urls[0]}')
-                gvar.check_new_photo = True
-    # input(_state)
-    # if config["configurable"].get("check_new_photo", False):
-    return {"photos":photo_urls}
-
-# for langsmith
-# def upload_photo(_state:MyState, config: RunnableConfig):
-#     if gvar.check_new_photo:
-#         return {"photos":photo_urls}
+    if not _state.get('photos', False):
+        _state['photos'] = []
+    # input(f'_state {_state}')
+    for t_message in _state['messages']:
+        if t_message.__class__.__name__ == 'HumanMessage':
+            if isinstance(t_message.content, list):
+                if len(t_message.content) > 0:
+                    for data in t_message.content:
+                        if data['type'] == 'image':
+                            _state['photos'].append(data['data'])
+                            gvar.check_new_photo = True
+                        if data['type'] == 'image_url':
+                            _state['photos'].append(data['image_url']['url'].split('base64,')[-1])
+                            gvar.check_new_photo = True
+    return {"photos":_state['photos']}
 
 
 def check_format(_state:MyState):
@@ -299,7 +304,6 @@ def check_format(_state:MyState):
     goto = 'check_together_deal'
     if _state.get("photos", False): # and gvar.check_new_photo : #有新图片且图片存在
         # 包含图片先进行图片处理
-        # 这里先按照固定逻辑处理，稍后改变！！假设全是表格图片
         for photo in _state["photos"]:
             # 全部转换为base64
             if not b64.is_base64(photo):
@@ -309,8 +313,6 @@ def check_format(_state:MyState):
     else:
         print('goto only_text_chat_sub')
         goto = 'only_text_chat_sub'
-    # return Command(update={"photos":new_photos}, goto=goto)
-    # input(len(new_photos))
     return {"photos":new_photos, 'recursion_times':0}
 
 def goto_where(_state) -> Union['check_together_deal', 'only_text_chat_sub']:
@@ -331,10 +333,7 @@ async def check_together_deal(_state:MyState, config: RunnableConfig):
 
     photo_inputs = []
     if gvar.check_new_photo:
-    # if config['configurable'].get('check_new_photo', False):
-        # print('有新图片')
         gvar.check_new_photo = False
-        # config['configurable']['check_new_photo'] = False
         for photo in _state["photos"]:
             photo_inputs.append({
                 "type": "image",
@@ -350,9 +349,6 @@ async def check_together_deal(_state:MyState, config: RunnableConfig):
     else:
         multimodal_message = []
 
-    # sys_message = HumanMessage(
-    #     content = '\n\n以上内容为历史信息\n\n以下内容是用户的问题:\n\n' 
-    # )
 
     text_message = SystemMessage(
             content =  '\n\n以上内容为历史信息\n\n以下内容是用户的问题:\n\n'  
@@ -361,10 +357,9 @@ async def check_together_deal(_state:MyState, config: RunnableConfig):
                         + image_partial_agent.sys_prompt
     )
 
-    _state['messages'] =  _state['messages'][:-1]
-    # print(_state['messages'])
+    history_messages = clear_image_history(_state)
 
-    all_history =  _state['messages'] + [text_message]    
+    all_history = history_messages[:-1] + [text_message]  #  _state['messages'][:-1] + [text_message]    
     async with aiofiles.open('final_history.txt', 'w') as f:
         await f.write(str(all_history))
     
@@ -372,45 +367,36 @@ async def check_together_deal(_state:MyState, config: RunnableConfig):
     ans = await image_partial_agent.llm_struture.ainvoke(all_history)
     print('结束invoke')
     print(ans)
-    # print(ans.image_question)
-    # print(ans.text_question)
-    # input('查看问题分离')
-    # input('我看看分区')
 
-    # input('<查看temp是否因为切片而变化')
-    # print(_state['messages'])
-    # input('查看temp是否因为切片而变化>')
-
-    if multimodal_message:
-        return {
-                'image_question':ans.image_question,
-                'text_question':ans.text_question,
-                # 'messages':multimodal_message,
-                }
-    else:
-        return{
-            'image_question':ans.image_question,
-            'text_question':ans.text_question,
-        }
+    return{
+        'image_question':ans.image_question,
+        'text_question':ans.text_question,
+    }
 
 
 
 def go_to_multi_process(_state:MyState):
+    # 对提问消息进行裁剪
+    new_messages = []
+    # input([_state['messages'][-1] ])
+    if _state['messages'][-1].__class__.__name__ == 'HumanMessage':
+        if isinstance(_state['messages'][-1].content, list) and (len(_state['messages'][-1].content) > 0):
+            last_is_image = False
+            for i_content in _state['messages'][-1].content:
+                if i_content['type'] == 'image' or i_content['type'] == 'image_url':
+                    last_is_image = True
+                    break
+            if last_is_image:
+                new_messages = _state['messages'][:-2] + [_state['messages'][-1]] # 跳过上一条文字信息
+        else:
+            new_messages = _state['messages'][:-1] # 上一条就是文字信息，所以要跳过
+    assert len(new_messages) > 0, 'new_messages 不能为空'
 
-    # input('<查看state是否因为切片而变化')
-    # print(_state['messages'])
-    # input('查看state是否因为切片而变化>')
     map_list:List[Send] =  []
-    # print(_state)
-    # input('查看state')
     if _state['image_question']:
-        # print('当前的state', _state)
-        # input('wait')
-        new_state_messages = clear_image_history(_state)
-        new_state_messages = new_state_messages[:-1] # 裁剪混合消息
-        # print('清除图片后的state', new_state_messages)
-        # input('wait')
-
+        # new_state_messages = clear_image_history(_state)
+        # new_state_messages = new_state_messages[:-1] # 裁剪混合消息
+        new_state_messages = new_messages.copy()
         map_list.append(Send(
             'multi_process_sub',
             {
@@ -421,17 +407,6 @@ def go_to_multi_process(_state:MyState):
             }
         ))
     if _state['text_question']:
-        # 裁剪混合消息
-        new_messages = []
-        
-        # 对提问消息进行裁剪
-        if _state['messages'][-1].__class__.__name__ == 'HumanMessage':
-            if isinstance(_state['messages'][-1].content, list):
-                if(len(_state['messages'][-1].content) > 0 and _state['messages'][-1].content[0]['type'] == 'image'):
-                    new_messages = _state['messages'][:-2] + [_state['messages'][-1]] # 跳过上一条文字信息
-            else:
-                new_messages = _state['messages'][:-1] # 上一条就是文字信息，所以要跳过
-
         map_list.append(Send(
             'only_text_chat_sub',
             {
@@ -452,51 +427,23 @@ async def only_text_chat_sub(_state):
 
         print(_state.keys()) # ['new_messages', 'sub_question']
         print('现在是子图only_text_chat_sub')
-        print('='*50)
-        # input('wait1')   
+        print('='*50) 
         res = await subgraph_text.ainvoke(_state)     
-        # async for event in subgraph_text.astream(
-        #     {'new_messages' : _state['new_messages']},
-        #     config = config,
-        #     subgraphs=True,
-        #     stream_mode = 'updates',
-        # ):
-        #     print(event)
     elif _state.get('messages', False): # 从check_format直接过来
         print(_state.keys()) # ['messages', 'photos']
         print('从check_format直接过来,现在是子图only_text_chat_sub')
         print('='*50)
-        # input('wait2')
         res = await subgraph_text.ainvoke({'new_messages' : _state['messages'].copy(), "recursion_times":_state['recursion_times']})  
-        # async for event in subgraph_text.astream(
-        #     {'new_messages' : _state['messages'].copy()},
-        #     config = config,
-        #     subgraphs = True,
-        #     stream_mode = 'updates',
-        # ):
-        #     print(event)
-    # del _state
-    # print(res) # res 是完整的记录了子图变化过程中的state
-    # input('查看res')
+    
     return {'messages' : res['new_messages']} # 返回最后的ai_message
+
 async def multi_process_sub(_state):
     # 只有可能是new_message
     assert not _state.get('messages', False), 'multi_process_sub不可能有messages字段'
     print(_state.keys()) # dict_keys(['new_messages', 'sub_question', 'photos'])
     print('只能从check_together_deal过来')
     print('='*50)
-    # input('wait3')
     res = await subgraph_multi.ainvoke(_state)
-    # async for event in subgraph_multi.astream(
-    #         {'new_messages' : _state['new_messages'].copy()},
-    #         config = config,
-    #         subgraphs=True, # 一定要有这个
-    #         stream_mode = 'updates',
-    #     ):
-    #         print(event)
-    # del _state
-    # print(res)
-    # input('查看res')
     return {'messages' : res['new_messages']}
 
 async def check_final_state(_state:MyState):

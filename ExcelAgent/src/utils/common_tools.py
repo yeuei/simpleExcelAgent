@@ -1,12 +1,17 @@
 import re
 import uuid
-from typing import Dict, List, Callable
+from typing import Dict, List, Callable,  List 
 import json
 from langgraph.prebuilt.interrupt import HumanInterruptConfig, HumanInterrupt
 from langgraph.types import interrupt
 from langchain_core.tools import tool as create_tool, BaseTool
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, BaseMessage
 from langchain_core.runnables import RunnableConfig
+from typing_extensions import Annotated, NotRequired, Sequence, TypedDict
+from langchain_core.runnables import RunnableConfig
+from langgraph.types import Send, interrupt
+from langgraph.prebuilt.interrupt import HumanInterruptConfig, HumanInterrupt
+import asyncio
 
 def clear_image_history(_state):
     username = {'HumanMessage': 'user', 'AIMessage' : 'ai', 'ToolMessage': 'tool', 'SystemMessage': 'system'}
@@ -66,12 +71,14 @@ def make_tool_call(ans:AIMessage):
     # input('查看正则')
 
     if result:
-        ans.tool_calls = []
+        ans.tool_calls =  ans.tool_calls if ans.tool_calls else []
+        ans.additional_kwargs['tool_calls'] = ans.additional_kwargs.get('tool_calls', [])
         for ind, item_para in enumerate(result):
             # keys = list(item_para.keys())
             # value = list((item_para[key]))
 
             # ans.additional_kwargs['tool_calls'][ind]['function']['arguments'] = {key : value} # 这个arguments的参数是一个str，非常你逆天
+            # input(item_para)
             name = item_para['name']
             args = item_para['arguments']
             # id = ans.additional_kwargs['tool_calls'][ind]['id']
@@ -79,7 +86,7 @@ def make_tool_call(ans:AIMessage):
             print(f'id:{id}, {len(id)}')
             type = 'tool_call'
             ans.tool_calls.append({'name':name, 'args':args, 'id':id, 'type':type})
-        ans.invalid_tool_calls = []
+            ans.invalid_tool_calls = []
         ans.response_metadata['finish_reason'] = 'tool_calls'
     if ans.invalid_tool_calls:
         print('意外的情况，快上报！！！')
@@ -100,16 +107,17 @@ def add_human_in_the_loop(
     tool: Callable | BaseTool,
     *,
     interrupt_config: HumanInterruptConfig = None,
+    TR: None
 ) -> BaseTool:
     """Wrap a tool to support human-in-the-loop review."""
     if not isinstance(tool, BaseTool):
         tool = create_tool(tool)
-
     if interrupt_config is None:
         interrupt_config = {
             "allow_accept": True,
             "allow_edit": True,
             "allow_respond": True,
+            "allow_ignore": False
         }
 
     @create_tool(  
@@ -117,7 +125,10 @@ def add_human_in_the_loop(
         description=tool.description,
         args_schema=tool.args_schema
     )
-    def call_tool_with_interrupt(config: RunnableConfig, **tool_input):
+    async def call_tool_with_interrupt(config: RunnableConfig, **tool_input):
+        if tool.name + str(tool_input) in TR.tools_record:
+            tool_response = TR.tools_record[tool.name + str(tool_input)]
+            return tool_response
         request: HumanInterrupt = {
             "action_request": {
                 "action": tool.name,
@@ -126,18 +137,22 @@ def add_human_in_the_loop(
             "config": interrupt_config,
             "description": "Please review the tool call"
         }
-        response = interrupt([request])[0]  
+        response = interrupt([request])[0]
+        print(f'hhhh \n {response}')
         # approve the tool call
         if response["type"] == "accept":
-            tool_response = tool.invoke(tool_input, config)
+            tool_response = await tool.ainvoke(tool_input, config)
+            TR.tools_record[tool.name + str(tool_input)] = tool_response
         # update tool call args
         elif response["type"] == "edit":
             tool_input = response["args"]["args"]
-            tool_response = tool.invoke(tool_input, config)
+            tool_response = await tool.ainvoke(tool_input, config)
+            TR.tools_record[tool.name + str(tool_input)] = tool_response
         # respond to the LLM with user feedback
         elif response["type"] == "response":
             user_feedback = response["args"]
             tool_response = user_feedback
+            TR.tools_record[tool.name + str(tool_input)] = tool_response
         else:
             raise ValueError(f"Unsupported interrupt response type: {response['type']}")
 
