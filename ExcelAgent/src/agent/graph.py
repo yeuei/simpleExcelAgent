@@ -285,7 +285,7 @@ def upload_photo(_state:MyState, config: RunnableConfig):
     if not _state.get('photos', False):
         _state['photos'] = []
     # input(f'_state {_state}')
-    for t_message in _state['messages']:
+    for t_message in _state['messages'][-2:]:
         if t_message.__class__.__name__ == 'HumanMessage':
             if isinstance(t_message.content, list):
                 if len(t_message.content) > 0:

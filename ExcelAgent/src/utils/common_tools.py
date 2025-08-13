@@ -21,9 +21,15 @@ def clear_image_history(_state):
         # print(message.__class__.__name__)
         # print(message.content)
         if message.__class__.__name__ == 'HumanMessage':
+            is_image = False
             if isinstance(message.content, list):
-                if(len(message.content) > 0 and message.content[0]['type'] == 'image'):
-                    continue
+                if(len(message.content) > 0):
+                    for i_content in message.content:
+                        if i_content['type'] == 'image' or i_content['type'] == 'image_url':
+                            is_image = True
+                            break
+            if is_image:
+                continue
         new_state.append(message)
     return new_state        
 
