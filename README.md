@@ -61,7 +61,7 @@ An example project for multimodal agent workflows. It is compatible with OpenAI-
     <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
 
 - **agent-chat-ui**
-  - Not recommended for now (known issues, see `issues:166`) ❗
+  - Not recommended for now (known issues, see [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)) ❗
   - If you want to try it, please check the latest progress on that issue first.
 
 ### Configuration & Notes 📝
@@ -69,7 +69,7 @@ An example project for multimodal agent workflows. It is compatible with OpenAI-
 - In `ExcelAgent/src/utils/Connect.py`, configure:
   - Your multimodal model API key (compatible with OpenAI-style calls)
   - LangSmith settings (optional; used for human-in-the-loop review)
-- You can switch the base model via `model_name` in `ExcelAgent/src/utils/Connect.py`.
+- You can switch the base model via `model_name` in [Connect.py](ExcelAgent/src/utils/Connect.py).
 
 ### Recommended Models ✅
 
@@ -78,7 +78,7 @@ An example project for multimodal agent workflows. It is compatible with OpenAI-
 
 ### Roadmap 🧪
 
-- Track and fix compatibility issues with `agent-chat-ui` (`issues:166`)
+- Track and fix compatibility issues with `agent-chat-ui` [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)
 - Consider flattening the graph structure to reduce mental overhead between main/subgraphs and improve UI interaction stability
 - Improve prompts and inter-node communication to reduce ineffective iterations
 
