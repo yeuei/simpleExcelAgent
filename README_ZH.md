@@ -93,3 +93,6 @@
 
 - [langchain-ai/agent-chat-ui](https://github.com/langchain-ai/agent-chat-ui)
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
+- [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
+# License
+[License](LICENSE)
