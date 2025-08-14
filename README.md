@@ -17,7 +17,7 @@
 ### Showcase 🖼️
 
 - **Human-in-the-loop, review tool calls**
-  `<img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />`
+  <img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />
 - **Asynchronous processing for pure text and multimodal tasks**
 
   - Example task: Image + “Please read this table and write the information into an Excel sheet, then help me check the weather in Beijing.”
@@ -25,8 +25,8 @@
     - Subgraph `only_text_chat_sub` handles pure text (e.g., tells a joke);
     - Subgraph `multi_process_sub` handles the multimodal task “read table and write into Excel”;
     - Both run asynchronously in parallel for higher throughput 🔁
-      `<img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />`
-      `<img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />`
+      <img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />
+      <img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />
 
 ### Architecture 🧭
 
