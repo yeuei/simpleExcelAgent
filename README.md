@@ -1,5 +1,5 @@
 ## SimpleExcelAgenWithMCP 🚀
-
+**Read this in other languages: [English](README.md), [中文](README_ZH.md).**
 ### Overview
 
 An example project for multimodal agent workflows. It is compatible with OpenAI-style APIs, comes with built-in code execution and Excel tools (MCP), and supports asynchronous parallel processing as well as human-in-the-loop review. 🧩⚙️
