@@ -61,7 +61,7 @@
 
   - Refer to `ExcelAgent/README.md`. Start with `langgraph dev`, and an interactive UI will appear in your browser.
   - Sample UI:
-    `<img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />`
+    <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
 - **agent-chat-ui**
 
   - Not recommended for now (known issues, see [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)) ❗
