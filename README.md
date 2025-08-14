@@ -86,7 +86,7 @@
 ### Future🧪
 
 - Track and fix compatibility issues with `agent-chat-ui` [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)
-- Consider flattening the graph structure to reduce mental overhead between main/subgraphs and improve UI interaction stability
+- Consider flattening the graph structure to reduce overhead between main/subgraphs and improve UI interaction stability
 - Improve prompts and inter-node communication to reduce ineffective iterations
 
 ### Acknowledgements 🙏
