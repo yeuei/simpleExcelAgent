@@ -63,7 +63,7 @@
     <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
 
 - **agent-chat-ui**
-  - 暂不推荐（存在已知问题，参考 `issues:166`）❗
+  - 暂不推荐（存在已知问题，参考 [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)）❗
   - 若需尝试，请先关注该 issue 的最新进展后再启动。
 
 ### 配置与注意事项 📝
@@ -71,7 +71,7 @@
 - 在 `ExcelAgent/src/utils/Connect.py` 中配置：
   - 多模态模型 API Key（兼容 OpenAI 风格调用）
   - LangSmith 配置（可为空，用于“人工在环”审阅）
-- 可在 `ExcelAgent/src/utils/Connect.py` 的 `model_name` 处切换基座模型。
+- 可在 [Connect.py](ExcelAgent/src/utils/Connect.py) 的 `model_name` 处切换基座模型。
 
 ### 推荐模型 ✅
 
@@ -80,7 +80,7 @@
 
 ### 规划与后续 🧪
 
-- 跟进修复 `agent-chat-ui` 的兼容问题（`issues:166`）
+- 跟进修复 `agent-chat-ui` 的兼容问题（[issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)`）
 - 评估将图结构扁平化，减少主图/子图心智负担，提升与现有 UI 的交互稳定性
 - 优化提示词与节点间沟通，减少无效迭代
 
