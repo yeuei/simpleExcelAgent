@@ -39,7 +39,7 @@
 3. `check_together_deal`: Route to either pure-text or multimodal branch
 4. `check_final_state`: Reset key variables
 
-#### Subgraph One `only_text_chat_sub`
+#### Subgraph 1 `only_text_chat_sub`
 
 <img width="883" height="851" alt="only-text-subgraph" src="https://github.com/user-attachments/assets/433d7c9f-6c11-4425-8c97-e669190e33a9" />
 
@@ -47,7 +47,7 @@
 2. `recursion_counter1`: Loop counter + tool selector; if exceeded threshold or no tool needed, go to `_end__`; otherwise go to `sub_tool_node1`
 3. `sub_tool_node1`: Tool call node; after completion, return to `only_text_chat`
 
-#### Subgraph Two `multi_process_sub`
+#### Subgraph 2 `multi_process_sub`
 
 <img width="730" height="668" alt="multi-process-subgraph" src="https://github.com/user-attachments/assets/dc4836f3-6d96-46e0-ba1f-7beb0876af99" />
 
@@ -93,3 +93,4 @@
 
 - [langchain-ai/agent-chat-ui](https://github.com/langchain-ai/agent-chat-ui)
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
+- [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
