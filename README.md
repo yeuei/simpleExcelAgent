@@ -1,8 +1,10 @@
 ## SimpleExcelAgenWithMCP 🚀
+
 **Read this in other languages: [English](README.md), [中文](README_ZH.md).**
+
 ### Overview🧩
 
-⚙️An example project for multimodal agent workflows. It is compatible with OpenAI-style APIs, comes with built-in code execution and Excel tools (MCP), and supports asynchronous parallel processing as well as human-in-the-loop review. 
+⚙️An example project for multimodal agent workflows. It is compatible with OpenAI-style APIs, comes with built-in code execution and Excel tools (MCP), and supports asynchronous parallel processing as well as human-in-the-loop review.
 
 ### Features ✨
 
@@ -66,10 +68,10 @@
 
 ### Configuration & Notes 📝
 
-- In `ExcelAgent/src/utils/Connect.py`, configure:
-  - Your multimodal model API key (compatible with OpenAI-style calls)
-  - LangSmith settings (optional; used for human-in-the-loop review)
-- You can switch the base model via `model_name` in [Connect.py](ExcelAgent/src/utils/Connect.py).
+- In `ExcelAgent/src/utils/Connect.py`:
+  - At the top of [Connect.py](ExcelAgent/src/utils/Connect.py), set your base model API key (compatible with OpenAI-style calls), base_url, model_name, and other parameters.
+- In `ExcelAgent/.env`:
+  - [.env](ExcelAgent/.env) Configure LangSmith settings. This step is optional.
 
 ### Recommended Models ✅
 

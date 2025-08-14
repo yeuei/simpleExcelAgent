@@ -69,10 +69,10 @@
 ### 配置与注意事项 📝
 
 - 在 `ExcelAgent/src/utils/Connect.py` 中配置：
-  - 多模态模型 API Key（兼容 OpenAI 风格调用）
-  - LangSmith 配置（可为空，用于“人工在环”审阅）
-- 可在 [Connect.py](ExcelAgent/src/utils/Connect.py) 的 `model_name` 处切换基座模型。
-
+  - 多模态模型 API Key（兼容 OpenAI 风格调用）可在 [Connect.py](ExcelAgent/src/utils/Connect.py) 代码最前方填写你的基座模型API、base_url、model_name等参数。
+- 在 `ExcelAgent/.env` 中进行LangSmith 配置 [.env](ExcelAgent/.env)
+  - 可省略
+  
 ### 推荐模型 ✅
 
 - 推荐：`qwen2.5-vl-7b-instruct`、`qwen2.5-vl-72b-instruct`
