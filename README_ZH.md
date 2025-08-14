@@ -17,7 +17,7 @@
 ### 特性展示 🖼️
 
 - **人工在环，审阅工具调用**
-  `<img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />`
+  <img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />
 - **异步处理纯文本与多模态任务**
 
   - 示例任务：图片 + “请阅读该表格，将其中信息写入 Excel，然后帮我查询北京的天气”
@@ -25,8 +25,8 @@
     - 子图 `only_text_chat_sub` 处理纯文本（如讲个笑话）；
     - 子图 `multi_process_sub` 处理“读表格并写入 Excel”的多模态任务；
     - 两者异步并行，提高效率 🔁
-      `<img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />`
-      `<img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />`
+      <img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />
+      <img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />
 
 ### 结构 🧭
 
