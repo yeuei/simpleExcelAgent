@@ -10,11 +10,21 @@ vllm serve /home/25-fengyuan/LLModel/Qwen2.5-VL-7B-Instruct \
 --chat-template-content-format openai \
 --generation-config vllm \
 --chat-template /home/25-fengyuan/LLModel/qwen2.5_tool_chat_template.jinja
+
+
+export CUDA_VISIBLE_DEVICES=0
+vllm serve /home/25-fengyuan/LLModel/Qwen2.5-VL-7B-Instruct \
+--host 0.0.0.0 \
+--port 8000 \
+--served-model-name Qwen2.5-VL-7B-Instruct \
+--max-model-len 65535 \
+--limit-mm-per-prompt image=8 \
+--allowed-local-media-path "/home/25-fengyuan/gitcode" \
+--chat-template /home/25-fengyuan/LLModel/qwen2.5_tool_chat_template.jinja \
+--enable-auto-tool-choice --tool-call-parser hermes
 """
 
-g_base_url = ''
-g_api_key = ''
-g_model_name = ''
+
 
 import langgraph.graph
 import matplotlib.pyplot as plt
@@ -28,17 +38,23 @@ import base64
 
 
 # 返回兼容Openai格式的llm
-def get_llm(base_url = g_base_url, api_key = g_api_key, model_name = g_model_name):
+def get_llm(base_url = 'http://localhost:8000/v1', api_key = 'none', model_name = 'Qwen2.5-VL-7B-Instruct'):
     return ChatOpenAI(
-                model= model_name,
+                model= model_name ,# 'qwen2.5-vl-72b-instruct', # model_name 
+                # google/gemma-3-27b-it:free
                 temperature=0,
                 max_tokens=4096,
                 timeout=50,
                 max_retries=2,
                 base_url= base_url,
-                api_key= api_key,
+                #'https://dashscope.aliyuncs.com/compatible-mode/v1', # base_url,
+                # "https://generativelanguage.googleapis.com/v1beta/openai/"
+                api_key= 'sk-59b6c13b9a4f48d4b69a5cf70b4f045e',
+                #'sk-59b6c13b9a4f48d4b69a5cf70b4f045e', # api_key,
+                # AIzaSyD8NLPmap9jCK9lfwtyuYp5DNhnHgFgQ1I
                 streaming=True
                 )
+
 def get_base64(local_url:str):
     with open(local_url, "rb") as image_file:
         image_data = base64.b64encode(image_file.read()).decode("utf-8")

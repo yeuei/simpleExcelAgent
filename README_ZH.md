@@ -17,7 +17,7 @@
 ### 特性展示 🖼️
 
 - **人工在环，审阅工具调用**
-  `<img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />`
+  <img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />
 - **异步处理纯文本与多模态任务**
 
   - 示例任务：图片 + “请阅读该表格，将其中信息写入 Excel，然后帮我查询北京的天气”
@@ -25,8 +25,8 @@
     - 子图 `only_text_chat_sub` 处理纯文本（如讲个笑话）；
     - 子图 `multi_process_sub` 处理“读表格并写入 Excel”的多模态任务；
     - 两者异步并行，提高效率 🔁
-      `<img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />`
-      `<img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />`
+      <img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />
+      <img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />
 
 ### 结构 🧭
 
@@ -61,7 +61,7 @@
 
   - 参考 `ExcelAgent/README.md`，使用 `langgraph dev` 启动，浏览器将出现可交互界面。
   - 示例界面：
-    `<img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />`
+    <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
 - **agent-chat-ui**
 
   - 暂不推荐（存在已知问题，参考 [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)）❗
@@ -86,10 +86,13 @@
 ### 规划与后续 🧪
 
 - 跟进修复 `agent-chat-ui` 的兼容问题（[issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)`）
-- 评估将图结构扁平化，减少主图/子图心智负担，提升与现有 UI 的交互稳定性
+- 尝试将图结构扁平化，减少主图/子图交流负担，提升与现有 UI 的交互稳定性
 - 优化提示词与节点间沟通，减少无效迭代
 
 ### 致谢 🙏
 
 - [langchain-ai/agent-chat-ui](https://github.com/langchain-ai/agent-chat-ui)
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
+- [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
+# License
+[License](LICENSE)
