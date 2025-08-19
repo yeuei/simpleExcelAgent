@@ -95,4 +95,8 @@
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
 - [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
 # License
+<<<<<<< HEAD
 [License](LICENSE)
+=======
+[License](LICENSE)
+>>>>>>> 8d8ac0493978d8d272228a7cc8a30e661418cce2
