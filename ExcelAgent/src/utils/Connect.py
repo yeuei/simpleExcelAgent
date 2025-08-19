@@ -36,9 +36,12 @@ from langchain_core.prompts import ChatPromptTemplate
 import argparse
 import base64
 
+g_base_url = ''
+g_api_key = 'none'
+g_model_name = ''
 
 # 返回兼容Openai格式的llm
-def get_llm(base_url = 'http://localhost:8000/v1', api_key = 'none', model_name = 'Qwen2.5-VL-7B-Instruct'):
+def get_llm(base_url = g_base_url, api_key = g_api_key, model_name = g_model_name):
     return ChatOpenAI(
                 model= model_name ,# 'qwen2.5-vl-72b-instruct', # model_name 
                 # google/gemma-3-27b-it:free
@@ -47,11 +50,7 @@ def get_llm(base_url = 'http://localhost:8000/v1', api_key = 'none', model_name 
                 timeout=50,
                 max_retries=2,
                 base_url= base_url,
-                #'https://dashscope.aliyuncs.com/compatible-mode/v1', # base_url,
-                # "https://generativelanguage.googleapis.com/v1beta/openai/"
-                api_key= 'sk-59b6c13b9a4f48d4b69a5cf70b4f045e',
-                #'sk-59b6c13b9a4f48d4b69a5cf70b4f045e', # api_key,
-                # AIzaSyD8NLPmap9jCK9lfwtyuYp5DNhnHgFgQ1I
+                api_key= api_key,
                 streaming=True
                 )
 
