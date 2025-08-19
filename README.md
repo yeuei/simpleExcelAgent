@@ -17,22 +17,23 @@
 ### Showcase 🖼️
 
 - **Human-in-the-loop, review tool calls**
-  <img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />
+
+  <img width="1510" height="400" alt="langsmith-in-the-loop" src="static/images/1.png" />
 - **Asynchronous processing for pure text and multimodal tasks**
 
   - Example task: Image + “Please read this table and write the information into an Excel sheet, then help me check the weather in Beijing.”
   - Execution result:
+
     - Subgraph `only_text_chat_sub` handles pure text (e.g., tells a joke);
     - Subgraph `multi_process_sub` handles the multimodal task “read table and write into Excel”;
-    - Both run asynchronously in parallel for higher throughput 🔁
-      <img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />
-      <img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />
+    - Both run asynchronously in parallel for higher throughput 🔁![async-overview](static/images/2.png)
+      ![excel-flow](static/images/3.png)
 
 ### Architecture 🧭
 
 #### Main Graph
 
-<img width="776" height="953" alt="main-graph" src="https://github.com/user-attachments/assets/575ba6b1-e2f0-4b21-83e6-2b275ab89789" />
+<img width="776" height="953" alt="main-graph" src="static/images/4.png" />
 
 1. `upload_photo`: Upload an image
 2. `check_format`: Validate image format
@@ -41,7 +42,7 @@
 
 #### Subgraph 1 `only_text_chat_sub`
 
-<img width="883" height="851" alt="only-text-subgraph" src="https://github.com/user-attachments/assets/433d7c9f-6c11-4425-8c97-e669190e33a9" />
+<img width="883" height="851" alt="only-text-subgraph" src="static/images/5.png" />
 
 1. `only_text_chat`: Handle text-only queries unrelated to images
 2. `recursion_counter1`: Loop counter + tool selector; if exceeded threshold or no tool needed, go to `_end__`; otherwise go to `sub_tool_node1`
@@ -49,7 +50,7 @@
 
 #### Subgraph 2 `multi_process_sub`
 
-<img width="730" height="668" alt="multi-process-subgraph" src="https://github.com/user-attachments/assets/dc4836f3-6d96-46e0-ba1f-7beb0876af99" />
+<img width="730" height="668" alt="multi-process-subgraph" src="static/images/6.png" />
 
 1. `multi_process`: Handle image-text multimodal problems
 2. `recursion_counter2`: Loop counter + tool selector; if exceeded threshold or no tool needed, go to `_end__`; otherwise go to `sub_tool_node2`
@@ -61,7 +62,8 @@
 
   - Refer to `ExcelAgent/README.md`. Start with `langgraph dev`, and an interactive UI will appear in your browser.
   - Sample UI:
-    <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
+
+  <img width="1924" height="400" alt="ui" src="static/images/7.png" />
 - **agent-chat-ui**
 
   - Not recommended for now (known issues, see [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)) ❗
@@ -94,9 +96,7 @@
 - [langchain-ai/agent-chat-ui](https://github.com/langchain-ai/agent-chat-ui)
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
 - [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
+
 # License
-<<<<<<< HEAD
+
 [License](LICENSE)
-=======
-[License](LICENSE)
->>>>>>> 8d8ac0493978d8d272228a7cc8a30e661418cce2

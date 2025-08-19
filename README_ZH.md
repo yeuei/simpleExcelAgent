@@ -17,22 +17,23 @@
 ### 特性展示 🖼️
 
 - **人工在环，审阅工具调用**
-  <img width="1510" height="1002" alt="langsmith-in-the-loop" src="https://github.com/user-attachments/assets/acf5cfd3-155d-4ac4-9100-90f619ab1556" />
+
+  <img width="1510" height="400" alt="langsmith-in-the-loop" src="static/images/1.png" />
 - **异步处理纯文本与多模态任务**
 
   - 示例任务：图片 + “请阅读该表格，将其中信息写入 Excel，然后帮我查询北京的天气”
   - 运行效果：
+
     - 子图 `only_text_chat_sub` 处理纯文本（如讲个笑话）；
     - 子图 `multi_process_sub` 处理“读表格并写入 Excel”的多模态任务；
-    - 两者异步并行，提高效率 🔁
-      <img width="1732" height="977" alt="async-overview" src="https://github.com/user-attachments/assets/5a0b842e-cd29-413d-9ad9-331b228045d3" />
-      <img width="765" height="493" alt="excel-flow" src="https://github.com/user-attachments/assets/009fa075-beac-438d-a2ef-f11eb5ad9ad1" />
+    - 两者异步并行，提高效率 🔁![async-overview](static/images/2.png)
+      ![excel-flow](static/images/3.png)
 
 ### 结构 🧭
 
 #### 主图
 
-<img width="776" height="953" alt="main-graph" src="https://github.com/user-attachments/assets/575ba6b1-e2f0-4b21-83e6-2b275ab89789" />
+<img width="776" height="800" alt="main-graph" src="static/images/4.png" />
 
 1. `upload_photo`：上传图片
 2. `check_format`：检查图片格式
@@ -41,7 +42,7 @@
 
 #### 子图一 `only_text_chat_sub`
 
-<img width="883" height="851" alt="only-text-subgraph" src="https://github.com/user-attachments/assets/433d7c9f-6c11-4425-8c97-e669190e33a9" />
+<img width="883" height="" alt="only-text-subgraph" src="static/images/5.png" />
 
 1. `only_text_chat`：处理与图片无关的文本问答
 2. `recursion_counter1`：循环计数与工具选择；超过阈值或无需工具时转 `_end__`，否则进入 `sub_tool_node1`
@@ -49,7 +50,7 @@
 
 #### 子图二 `multi_process_sub`
 
-<img width="730" height="668" alt="multi-process-subgraph" src="https://github.com/user-attachments/assets/dc4836f3-6d96-46e0-ba1f-7beb0876af99" />
+<img width="730" height="600" alt="multi-process-subgraph" src="static/images/6.png" />
 
 1. `multi_process`：处理图文多模态问题
 2. `recursion_counter2`：循环计数与工具选择；超过阈值或无需工具时转 `_end__`，否则进入 `sub_tool_node2`
@@ -61,7 +62,8 @@
 
   - 参考 `ExcelAgent/README.md`，使用 `langgraph dev` 启动，浏览器将出现可交互界面。
   - 示例界面：
-    <img width="1924" height="1417" alt="ui" src="https://github.com/user-attachments/assets/5729d10a-afe4-4b01-a450-7c18febcdc43" />
+
+  <img width="1924" height="400" alt="ui" src="static/images/7.png" />
 - **agent-chat-ui**
 
   - 暂不推荐（存在已知问题，参考 [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)）❗
@@ -94,9 +96,7 @@
 - [langchain-ai/agent-chat-ui](https://github.com/langchain-ai/agent-chat-ui)
 - [langchain-ai/new-langgraph-project](https://github.com/langchain-ai/new-langgraph-project)
 - [excel-mcp-server)](https://github.com/haris-musa/excel-mcp-server)
+
 # License
-<<<<<<< HEAD
+
 [License](LICENSE)
-=======
-[License](LICENSE)
->>>>>>> 8d8ac0493978d8d272228a7cc8a30e661418cce2
