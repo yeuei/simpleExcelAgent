@@ -18,7 +18,7 @@
 
 - **Human-in-the-loop, review tool calls**
 
-  <img width="1510" height="400" alt="langsmith-in-the-loop" src="static/images/1.png" />
+  <img width="1510" height="700" alt="langsmith-in-the-loop" src="static/images/1.png" />
 - **Asynchronous processing for pure text and multimodal tasks**
 
   - Example task: Image + “Please read this table and write the information into an Excel sheet, then help me check the weather in Beijing.”
@@ -63,7 +63,7 @@
   - Refer to `ExcelAgent/README.md`. Start with `langgraph dev`, and an interactive UI will appear in your browser.
   - Sample UI:
 
-  <img width="1924" height="400" alt="ui" src="static/images/7.png" />
+  <img width="1924" height="700" alt="ui" src="static/images/7.png" />
 - **agent-chat-ui**
 
   - Not recommended for now (known issues, see [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)) ❗
