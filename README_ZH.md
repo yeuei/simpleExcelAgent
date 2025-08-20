@@ -33,7 +33,7 @@
 
 #### 主图
 
-<img width="776" height="800" alt="main-graph" src="static/images/4.png" />
+<img width="776" height="900" alt="main-graph" src="static/images/4.png" />
 
 1. `upload_photo`：上传图片
 2. `check_format`：检查图片格式
