@@ -18,7 +18,7 @@
 
 - **人工在环，审阅工具调用**
 
-  <img width="1510" height="400" alt="langsmith-in-the-loop" src="static/images/1.png" />
+  <img width="1510" height="700" alt="langsmith-in-the-loop" src="static/images/1.png" />
 - **异步处理纯文本与多模态任务**
 
   - 示例任务：图片 + “请阅读该表格，将其中信息写入 Excel，然后帮我查询北京的天气”
@@ -63,7 +63,7 @@
   - 参考 `ExcelAgent/README.md`，使用 `langgraph dev` 启动，浏览器将出现可交互界面。
   - 示例界面：
 
-  <img width="1924" height="400" alt="ui" src="static/images/7.png" />
+  <img width="1924" height="700" alt="ui" src="static/images/7.png" />
 - **agent-chat-ui**
 
   - 暂不推荐（存在已知问题，参考 [issues:166](https://github.com/langchain-ai/agent-chat-ui/issues/166)）❗
